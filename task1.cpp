@@ -1,12 +1,23 @@
 #include <iostream>
 #include <iomanip>
 using namespace std;
+class VectorDouble;
+class  AnyClass {
+public:
+
+void Set(VectorDouble a){
+    a.size=10;
+}
+}
 
 class VectorDouble {
+friend void  AnyClass::Set(VectorDouble a);
+friend  class AnyClass;
 private:
     double* v;
     int size;
     int state;
+public:
     static double badIndexRef;
     static int numVec;
 
@@ -139,9 +150,15 @@ public:
         for (int i = 0; i < size; i++) res.v[i] = v[i] + other.v[i];
         return res;
     }
+ friend ostream& operator<<(ostream& out, const VectorDouble& vec);
+ friend istream& operator>>(istream& in, VectorDouble& vec) ;
+        static int CountVectors() {
+        return numVec;
+    }
+};
 
-    // Оператор виводу
-    friend ostream& operator<<(ostream& out, const VectorDouble& vec) {
+// Оператор вивод
+ostream& operator<<(ostream& out, const VectorDouble& vec) {
         out << "[ ";
         for (int i = 0; i < vec.size; i++) {
             out << fixed << setprecision(2) << vec.v[i] << " ";
@@ -151,15 +168,11 @@ public:
     }
 
     // Оператор вводу
-    friend istream& operator>>(istream& in, VectorDouble& vec) {
+    istream& operator>>(istream& in, VectorDouble& vec) {
         for (int i = 0; i < vec.size; i++) in >> vec.v[i];
         return in;
     }
 
-    static int CountVectors() {
-        return numVec;
-    }
-};
 
 // Статичні поля
 double VectorDouble::badIndexRef = 0.0;
@@ -167,10 +180,13 @@ int VectorDouble::numVec = 0;
 
 
 int main() {
+    VectorDouble::numVec =-1;
     VectorDouble a(3, 2.5);
+    a.numVec =1;  
     VectorDouble b(3, 1.5);
+    
     VectorDouble c = a + b;
-
+    
     cout << "a + b = " << c << endl;
 
     c[1] = 10.0;
